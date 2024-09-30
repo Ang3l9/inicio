@@ -1,0 +1,44 @@
+﻿/* index.css */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    position: relative; /* Necesario para el posicionamiento del pseudo-elemento */
+}
+
+    body::before {
+        content: '';
+        background-image: url('/images/logo2.jpg');
+        background-size: cover; /* Cubre todo el fondo */
+        background-position: center; /* Centra la imagen */
+        position: absolute; /* Posiciona el pseudo-elemento */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.4; /* Ajusta la opacidad de la imagen */
+        z-index: 0; /* Detrás del contenido */
+    }
+
+.container-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Ocupa toda la altura del contenedor */
+    text-align: center; /* Centra el texto */
+    position: relative; /* Necesario para que el texto esté por encima de la imagen */
+    z-index: 1; /* Asegura que el contenido esté por encima */
+}
+
+h1 {
+    color: #102045; 
+    font-weight: bold; 
+    font-size: 4rem; /* Tamaño de fuente aumentado */
+}
+
+p {
+    color: #102045;
+    font-weight: bold; /* Fuente gruesa */
+    font-size: 2rem; /* Tamaño de fuente aumentado */
+}

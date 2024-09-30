@@ -1,0 +1,89 @@
+﻿@page "/registro"
+@using ReservacionVehicleBD.Services
+@using ReservacionVehicleBD.Models
+@inject NavigationManager Navigation
+@inject AuthService authService
+
+<link href="css/registro.css" rel="stylesheet" />
+
+<div class="register-container">
+    <h3>Registro de Usuario</h3>
+
+    <EditForm Model="usuario" OnValidSubmit="RegistrarUsuario" autocomplete="off">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="nombreUsuario" class="label-style">Nombre de Usuario</label>
+            <InputText id="nombreUsuario" class="input-field" @bind-Value="usuario.NombreUsuario" autocomplete="off" />
+            @if (string.IsNullOrWhiteSpace(usuario.NombreUsuario) && formSubmitted)
+            {
+                <div class="text-danger">El nombre de usuario no puede estar vacío.</div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="contrasena" class="label-style">Contraseña</label>
+            <InputText id="contrasena" class="input-field" type="password" @bind-Value="usuario.Contraseña" autocomplete="off" />
+            @if (string.IsNullOrWhiteSpace(usuario.Contraseña) && formSubmitted)
+            {
+                <div class="text-danger">La contraseña no puede estar vacía.</div>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="text-danger">@errorMessage</div>
+        }
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="text-success">@successMessage</div>
+        }
+
+        <button type="submit" class="register-button">Registrarse</button>
+    </EditForm>
+
+    <div>
+        <a href="/login">Iniciar Sesión</a>
+    </div>
+</div>
+
+@code {
+    private Usuario usuario = new Usuario();
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private bool formSubmitted = false;
+
+    private async Task RegistrarUsuario()
+    {
+        formSubmitted = true;
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(usuario.NombreUsuario) || string.IsNullOrWhiteSpace(usuario.Contraseña))
+        {
+            errorMessage = "Por favor, complete todos los campos.";
+            return;
+        }
+
+        try
+        {
+            if (authService.UsuarioExiste(usuario.NombreUsuario))
+            {
+                errorMessage = "El usuario ya existe.";
+                return;
+            }
+
+            authService.RegistrarUsuario(usuario.NombreUsuario, usuario.Contraseña);
+            successMessage = "Registro exitoso.";
+
+            await Task.Delay(2000);
+            Navigation.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+}

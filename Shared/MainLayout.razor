@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+
+<PageTitle>ReservacionVehicleBD</PageTitle>
+
+<div class="page">
+    @* Mostrar NavMenu solo en las páginas Index, Counter y Fetch Data *@
+    @if (Navigation.Uri.Contains("/index") ||
+    Navigation.Uri.Contains("/counter") ||
+    Navigation.Uri.Contains("/fetchdata"))
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

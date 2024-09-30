@@ -1,0 +1,53 @@
+﻿@page "/bienvenida/{username}"
+@inject NavigationManager NavigationManager
+
+<link href="css/Bienvenida.css" rel="stylesheet" />
+
+<div class="Bienvenida">
+    <div class="container welcome-container">
+        <h3>¡Bienvenido(a), @username!</h3>
+        <p>Has iniciado sesión exitosamente.</p>
+        <p>Progreso: <span>@progressPercentage%</span></p>
+        <div class="progress-bar">
+            <div class="progress" style="width:@progressPercentage%;"></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string username { get; set; } // Parámetro para el nombre de usuario
+    private int countdown = 5; // Tiempo en segundos para el conteo regresivo
+    private double progressPercentage = 0; // Porcentaje de progreso
+    private System.Timers.Timer timer;
+
+    protected override void OnInitialized()
+    {
+        timer = new System.Timers.Timer(1000);
+        timer.Elapsed += OnTimedEvent;
+        timer.AutoReset = true;
+        timer.Enabled = true;
+    }
+
+    private void OnTimedEvent(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (countdown > 0)
+        {
+            countdown--;
+            progressPercentage = ((5 - countdown) / 5.0) * 100;
+        }
+        else
+        {
+            progressPercentage = 100;
+            timer.Stop();
+            timer.Dispose();
+            NavigationManager.NavigateTo("/index");
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

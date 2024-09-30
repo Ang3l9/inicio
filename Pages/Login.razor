@@ -1,0 +1,84 @@
+﻿@page "/login"
+@using ReservacionVehicleBD.Services
+@inject AuthService authService
+@inject NavigationManager Navigation
+
+<link href="css/login.css" rel="stylesheet" />
+
+<div class="container">
+    <h3>Iniciar Sesión</h3>
+    <EditForm Model="usuarioLogin" OnValidSubmit="HandleLogin" autocomplete="off">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label class="label-style">Nombre de Usuario:</label>
+            <InputText @bind-Value="usuarioLogin.NombreUsuario" class="input-style" autocomplete="off" />
+            @if (string.IsNullOrWhiteSpace(usuarioLogin.NombreUsuario) && formSubmitted)
+            {
+                <div class="text-danger">Por favor, complete ambos campos.</div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label class="label-style">Contraseña:</label>
+            <InputText @bind-Value="usuarioLogin.Contraseña" type="password" class="input-style" autocomplete="off" />
+            @if (string.IsNullOrWhiteSpace(usuarioLogin.Contraseña) && formSubmitted)
+            {
+                <div class="text-danger">Por favor, complete ambos campos.</div>
+            }
+        </div>
+
+        <button type="submit">Iniciar Sesión</button>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success">@successMessage</div>
+        }
+
+        <div class="footer">
+            <p>¿No tienes cuenta? <a href="/registro">Registrarse</a></p>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private UsuarioLogin usuarioLogin = new UsuarioLogin();
+    private string errorMessage;
+    private string successMessage;
+    private bool formSubmitted = false;
+
+    private void HandleLogin()
+    {
+        formSubmitted = true;
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(usuarioLogin.NombreUsuario) || string.IsNullOrWhiteSpace(usuarioLogin.Contraseña))
+        {
+            errorMessage = "Por favor, complete ambos campos.";
+            return;
+        }
+
+        if (authService.ValidarUsuario(usuarioLogin.NombreUsuario, usuarioLogin.Contraseña))
+        {
+            successMessage = "Inicio de sesión exitoso.";
+            Navigation.NavigateTo($"/bienvenida/{usuarioLogin.NombreUsuario}");
+        }
+        else
+        {
+            errorMessage = "El Nombre de Usuario o Contraseña es Incorrecto.";
+        }
+    }
+
+    private class UsuarioLogin
+    {
+        public string NombreUsuario { get; set; } = string.Empty;
+        public string Contraseña { get; set; } = string.Empty;
+    }
+}
